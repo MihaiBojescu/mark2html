@@ -1,0 +1,103 @@
+tree ─> prima frunză e primul keyword ─> a doua e textul [─> a treia e keyword─ul de final]
+     ─> dacă nu găsim un keyword, punem doar textul
+     
+     
+pentru ``` vom avea:
+    tree
+    ╱  ╲
+ <pre> altceva
+   │
+  text
+   │
+ </pre>
+   │
+  none
+  
+pentru ` vom avea:
+    tree
+    ╱  ╲
+ <code> altceva
+   │
+  text
+   │
+ </code>
+   │
+  none
+   
+pentru * vom avea:
+    tree
+    ╱  ╲
+  <i>  altceva
+   │
+  text
+   │
+  </i>
+   │
+  none
+   
+pentru ** vom avea:
+    tree
+    ╱  ╲
+  <b>  altceva
+   │
+  text
+   │
+  </b>
+   │
+  none
+   
+pentru *** vom avea:
+    tree
+    ╱  ╲
+ <b,i>  altceva
+   │
+  text
+   │
+ </b,/i>
+   │
+  none
+   
+pentru * fără * de final vom avea:      │        pentru mai multe linii cu * la început vom avea:
+    tree                                │               tree
+    ╱  ╲                                │               ╱  ╲
+  <ul> altceva                          │             <ul> altceva
+   │                                    │              │
+  <li>                                  │             <li>
+   │            <──────────┬─────────────────────>     │
+  text                     │            │             text
+   │                       │            │              │
+ </li>                     │            │            </li>
+   │                       │            │              │
+ </ul>                     │            │             <li>
+   │                       │            │              │
+  none                     │            │             text
+                           │            │              │
+                           │            │            </li>
+                           │            │              │
+                           │            │            </ul>
+                           │            │              │
+                           │            │             none
+                           │             
+                           │             
+pentru > avem ca la liste (O)
+
+
+───────────────────────────────────────────────────────
+exemplu pentru o lista, un code block si un inline code
+
+       ┌───────────tree───────────┐
+       │             │            │
+      <ul>         <pre>       <code>
+       │             │            │
+      <li>         text         text   
+       │             │            │
+    element        </pre>      </code>
+       │             │            │
+      <li>          none         none
+       │
+    element
+       │
+     </li>
+       │
+      none
+       

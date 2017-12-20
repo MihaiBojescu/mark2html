@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 #
+# TODO: implement trees
 # TODO: fix codeBlockHandler
 # TODO: implement custom css file
 # TODO: implement codeHandler
@@ -13,7 +14,7 @@ def handleArgs(args):
     if len(args) == 1:
         print("Usage:")
         print("markdown2html <markdown document>")
-        print("\nIt will use output.css file for "
+        print("\n\nWill generate output.html. It will use output.css file for "
               "styling. The file is located inside the css folder.")
         sys.exit(1)
     elif len(args) >= 2:
