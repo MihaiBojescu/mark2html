@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+#
+# TODO: fix codeBlockHandler
+# TODO: implement custom css file
+# TODO: implement codeHandler
+#
 import os
 import sys
 
@@ -7,8 +12,8 @@ def handleArgs(args):
     IO = [None, None]
     if len(args) == 1:
         print("Usage:")
-        print("markdown2html <markdown document> [<output file>]")
-        print("\nIt will use output.css or <output file>.css file for "
+        print("markdown2html <markdown document>")
+        print("\nIt will use output.css file for "
               "styling. The file is located inside the css folder.")
         sys.exit(1)
     elif len(args) >= 2:
@@ -85,26 +90,40 @@ def codeBlockHandler(buffer, lines, currentIndex):
         return (output, currentIndex + 1)
 
 
-def codeHandler(buffer, remainingLines):
-    output = ''.join((buffer))
+def codeHandler(buffer, lines, currentIndex):
+    output = ""
+    newIndex = currentIndex
+    found = False
+
+    for newIndex in range(currentIndex + 1, len(lines)):
+        if lines[newIndex].find("`") != -1 and lines[newIndex].find("```") != lines[newIndex].find("`"):
+            found = True
+            break
+
+    if found:
+        pass
+    else:
+        pass
+
     return output
 
 
 def breakHandler(buffer, line):
-    output = ''.join((buffer, line.replace("<br>", "\n")))
+    output = ''.join((buffer, line))
     return output
 
 
 def handleBuffer(buffer):
-    outputBuffer = str("<!DOCTYPE html>\n"
-                       "<html>\n"
-                       "    <head>\n"
-                       "        <link rel=\"stylesheet\" type=\"text/css\" href=\"css/output.css\"\n"
-                       "    </head>\n"
-                       "    <body>\n")
+    outputBuffer = '\n'.join(("<!DOCTYPE html>",
+                              "<html>",
+                              "    <head>",
+                              "        <link rel=\"stylesheet\" type=\"text/css\" href=\"css/output.css\"",
+                              "    </head>",
+                              "    <body>"))
 
     lines = buffer.splitlines()
     i = 0
+
     while i < len(lines):
         line = lines[i]
         line = line.strip()
@@ -121,10 +140,13 @@ def handleBuffer(buffer):
                                                         i)
             i = newIndex
 
-        # elif line.find('`'):
-        #     outputBuffer = codeHandler(outputBuffer, lines[i:])
-        #
-        elif line.find('<br>'):
+        # if line.find('`') != -1:
+        #     (outputBuffer, newIndex) = codeHandler(outputBuffer,
+        #                                            lines,
+        #                                            i)
+        #     i = newIndex
+
+        if line.find('<br>') != -1:
             outputBuffer = breakHandler(outputBuffer, line)
 
         else:
@@ -138,8 +160,9 @@ def handleBuffer(buffer):
 
 
 def writeFile(filename, buffer):
-    if filename is None:
-        filename = "output.html"
+    # if filename is None:
+    folder = os.path.abspath(os.path.join(filename, os.pardir))
+    filename = ''.join((folder, "/output.html"))
 
     try:
         file = os.open(filename, os.O_WRONLY | os.O_CREAT)
@@ -151,7 +174,7 @@ def writeFile(filename, buffer):
 
     folder = os.path.abspath(os.path.join(filename, os.pardir))
     cssfolder = ''.join((folder, "/css/"))
-    cssfile = ''.join((cssfolder, os.path.splitext(filename)[0], ".css"))
+    cssfile = ''.join((cssfolder, "output.css"))
 
     if not os.path.exists(cssfolder) or not os.path.isdir(cssfolder):
         try:
@@ -174,7 +197,7 @@ def main(args):
     IO = handleArgs(args)
     buffer = readFile(IO[0])
     outputBuffer = handleBuffer(buffer)
-    writeFile(IO[1], outputBuffer)
+    writeFile(IO[0], outputBuffer)
 
 
 if __name__ == '__main__':
