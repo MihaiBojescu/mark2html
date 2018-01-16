@@ -17,22 +17,25 @@ class Parser:
     def parse(self):
         print("Total number of tokens: {0}".format(len(self.tokens)))
         while(self.previousIteration < len(self.tokens) - 1):
-            self.definition("heading",              [self.headings(), self.whitespace()])
-            self.definition("newlines",             [self.newLines()])
-            self.definition("italic text",          [self.italic()])
-            self.definition("bold text",            [self.bold()])
-            self.definition("bold and italic text", [self.bolditalic()])
-            self.definition("line break",           [self.linebreak()])
-            self.definition("code block",           [self.code(), self.code(), self.code(), self.formatedTextBlock(), self.code(), self.code(), self.code()])
-            self.definition("inline code",          [self.code(), self.formatedTextBlock(), self.code()])
-            self.definition("link",                 [self.lbracket(), self.wordListWithSpaces(), self.rbracket(), self.lparanthesis(), self.wordListWithSpaces(), self.rparanthesis()])
-            self.definition("unordered list",       [self.star(), self.whitespace(), self.code(), self.code(), self.code(), self.formatedTextBlock(), self.code(), self.code(), self.code()])
-            self.definition("unordered list",       [self.star(), self.whitespace(), self.code(), self.formatedTextBlock(), self.code()])
-            self.definition("unordered list",       [self.star(), self.whitespace(), self.wordListWithSpaces()])
-            self.definition("line break",           [self.line(), self.line(), self.line(), self.newline()])
-            self.definition("line break",           [self.star(), self.star(), self.star(), self.newline()])
-            self.definition("line break",           [self.underscore(), self.underscore(), self.underscore(), self.newline()])
-            self.definition("words",                [self.wordListWithSpaces()])
+            if(self.definition("table",                [self.tableRow(), self.newline(), self.tableHead(), self.newline(), self.tableRows()])): continue
+            if(self.definition("link",                 [self.lbracket(), self.wordListWithSpaces(), self.rbracket(), self.lparanthesis(), self.wordListWithSpaces(), self.rparanthesis()])): continue
+            if(self.definition("image",                [self.exclamationMark(), self.lbracket(), self.wordListWithSpaces(), self.rbracket(), self.lparanthesis(), self.wordListWithSpaces(), self.rparanthesis()])): continue
+            if(self.definition("heading",              [self.headings(), self.whitespace()])): continue
+            if(self.definition("quotation",            [self.rangular(), self.whitespace(), self.wordListWithSpaces(), self.newline()])): continue
+            if(self.definition("newlines",             [self.newLines()])): continue
+            if(self.definition("italic text",          [self.italic()])): continue
+            if(self.definition("bold text",            [self.bold()])): continue
+            if(self.definition("bold and italic text", [self.bolditalic()])): continue
+            if(self.definition("line break",           [self.linebreak()])): continue
+            if(self.definition("code block",           [self.code(), self.code(), self.code(), self.formatedTextBlock(), self.code(), self.code(), self.code()])): continue
+            if(self.definition("inline code",          [self.code(), self.formatedTextBlock(), self.code()])): continue
+            if(self.definition("unordered list",       [self.star(), self.whitespace(), self.code(), self.code(), self.code(), self.formatedTextBlock(), self.code(), self.code(), self.code()])): continue
+            if(self.definition("unordered list",       [self.star(), self.whitespace(), self.code(), self.formatedTextBlock(), self.code()])): continue
+            if(self.definition("unordered list",       [self.star(), self.whitespace(), self.wordListWithSpaces()])): continue
+            if(self.definition("line break",           [self.line(), self.line(), self.line(), self.newline()])): continue
+            if(self.definition("line break",           [self.star(), self.star(), self.star(), self.newline()])): continue
+            if(self.definition("line break",           [self.underscore(), self.underscore(), self.underscore(), self.newline()])): continue
+            if(self.definition("words",                [self.wordListWithSpaces()])): continue
 
             if(self.previousIteration == self.oldIteration):
                 print("Stuck at token number: {0}, token: {1}".format(self.oldIteration, self.tokens[self.oldIteration]))
@@ -48,8 +51,10 @@ class Parser:
             print(self.iteration)
             self.previousIteration = self.iteration[0]
             self.iteration = [self.previousIteration]
+            return True
         else:
             self.iteration = [self.previousIteration]
+            return False
 
     def definitionRecursive(self, definitionList, i):
         if i > len(definitionList) - 1:
@@ -63,14 +68,6 @@ class Parser:
         for element in node.nodeList:
             print(element.value)
             self.printoutput(element)
-
-    def getNextToken(self):
-        if self.currentPos < len(self.tokens):
-            self.currentPos += 1
-            self.currentToken = self.tokens[self.currentPos]
-
-    def peekNextToken(self, i):
-        return self.output
 
     def heading1(self):
         if self.iteration[0] > len(self.tokens) - 1: return False
@@ -164,7 +161,7 @@ class Parser:
 
     def star(self):
         if self.iteration[0] > len(self.tokens) - 1: return False
-        if self.tokens[self.iteration[0]][1] == "star":
+        if self.tokens[self.iteration[0]][1] == "*":
             self.iteration.append(self.tokens[self.iteration[0]])
             self.iteration[0] += 1
             return True
@@ -173,7 +170,17 @@ class Parser:
 
     def tilde(self):
         if self.iteration[0] > len(self.tokens) - 1: return False
-        if self.tokens[self.iteration[0]][1] == "tilde":
+        if self.tokens[self.iteration[0]][1] == "~":
+            self.iteration.append(self.tokens[self.iteration[0]])
+            self.iteration[0] += 1
+            return True
+        else:
+            return False
+
+
+    def verticalLine(self):
+        if self.iteration[0] > len(self.tokens) - 1: return False
+        if self.tokens[self.iteration[0]][1] == "|":
             self.iteration.append(self.tokens[self.iteration[0]])
             self.iteration[0] += 1
             return True
@@ -182,7 +189,7 @@ class Parser:
 
     def line(self):
         if self.iteration[0] > len(self.tokens) - 1: return False
-        if self.tokens[self.iteration[0]][1] == "line":
+        if self.tokens[self.iteration[0]][1] == "-":
             self.iteration.append(self.tokens[self.iteration[0]])
             self.iteration[0] += 1
             return True
@@ -191,7 +198,7 @@ class Parser:
 
     def code(self):
         if self.iteration[0] > len(self.tokens) - 1: return False
-        if self.tokens[self.iteration[0]][1] == "code":
+        if self.tokens[self.iteration[0]][1] == "`":
             self.iteration.append(self.tokens[self.iteration[0]])
             self.iteration[0] += 1
             return True
@@ -200,7 +207,16 @@ class Parser:
 
     def underscore(self):
         if self.iteration[0] > len(self.tokens) - 1: return False
-        if self.tokens[self.iteration[0]][1] == "underscore":
+        if self.tokens[self.iteration[0]][1] == "_":
+            self.iteration.append(self.tokens[self.iteration[0]])
+            self.iteration[0] += 1
+            return True
+        else:
+            return False
+
+    def exclamationMark(self):
+        if self.iteration[0] > len(self.tokens) - 1: return False
+        if self.tokens[self.iteration[0]][1] == "!":
             self.iteration.append(self.tokens[self.iteration[0]])
             self.iteration[0] += 1
             return True
@@ -353,7 +369,7 @@ class Parser:
 
     def wordListWithSpaces(self):
         found = False
-        while self.word() or self.whitespace() or self.symbol() or self.line() or self.tilde():
+        while self.word() or self.whitespace() or self.symbol() or self.line() or self.tilde() or self.exclamationMark():
             found = True
         return found
 
@@ -361,12 +377,18 @@ class Parser:
         found = False
         while self.word() or self.whitespace() or self.symbol() or self.line() or self.tilde() or self.newLines() or self.lbrace() or self.rbrace() \
         or self.lparanthesis() or self.rparanthesis() or self.langular() or self.rangular() or self.lbracket() or self.rbracket() or self.startBoldHTML() \
-        or self.endBoldHTML() or self.startItalicHTML() or self.endItalicHTML() or self.headings():
+        or self.endBoldHTML() or self.startItalicHTML() or self.endItalicHTML() or self.headings() or self.star() or self.tilde() or self.underscore() \
+        or self.verticalLine() or self.exclamationMark():
             found = True
         return found
 
     def italic(self):
-        return self.star() and self.wordListWithSpaces() and self.star()
+        if self.star() and self.wordListWithSpaces() and self.star():
+            return True
+        elif self.startItalicHTML() and self.wordListWithSpaces() and self.endItalicHTML():
+            return True
+        else:
+            return False
 
     def bold(self):
         if self.star() and self.star() and self.wordListWithSpaces() and self.star() and self.star():
@@ -377,10 +399,52 @@ class Parser:
             return False
 
     def bolditalic(self):
-        return self.star() and self.star() and self.star() and self.wordListWithSpaces() and self.star() and self.star() and self.star()
+        if self.star() and self.star() and self.star() and self.wordListWithSpaces() and self.star() and self.star() and self.star():
+            return True
+        elif self.startBoldHTML() and self.startItalicHTML() and self.wordListWithSpaces and self.endItalicHTML() and self.startBoldHTML():
+            return True
+        elif self.startItalicHTML() and self.startBoldHTML() and self.wordListWithSpaces and self.endBoldHTML() and self.startItalicHTML():
+            return True
+        return False
 
     def newLines(self):
         found = False
         while self.newline():
+            found = True
+        return found
+
+    def lines(self):
+        found = False
+        while self.line():
+            found = True
+        return found
+
+    def tableRow(self):
+        if self.wordListWithSpaces():
+            found = False
+            while self.verticalLine() or self.wordListWithSpaces():
+                found = True
+            if self.iteration[len(self.iteration) - 1][1] != "|":
+                return found
+            else:
+                return False
+        else:
+            return False
+
+    def tableHead(self):
+        if self.lines():
+            found = False
+            while self.verticalLine() or self.lines() or self.whitespace():
+                found = True
+            if self.iteration[len(self.iteration) - 1][1] != "|":
+                return found
+            else:
+                return False
+        else:
+            return False
+
+    def tableRows(self):
+        found = False
+        while self.tableRow():
             found = True
         return found

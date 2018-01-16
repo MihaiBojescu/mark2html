@@ -18,6 +18,8 @@ class Tokenizer:
             if(self.handleLine()): continue
             if(self.handleTilde()): continue
             if(self.handleCode()): continue
+            if(self.handleVerticalLine()): continue
+            if(self.handleExclamationMark()): continue
             if(self.handleHeadings()): continue
             if(self.handleBoldHTML()): continue
             if(self.handleItalicHTML()): continue
@@ -210,7 +212,7 @@ class Tokenizer:
             return False
 
     def handleLineBreakHTML(self):
-        match = re.match("[<](br)[>]", self.buffer)
+        match = re.match("<br>", self.buffer)
         if match:
             self.addTokenToList(match, "linebreak")
             self.eliminateTokenFromBuffer(match)
@@ -221,7 +223,7 @@ class Tokenizer:
     def handleCode(self):
         match = re.match("`", self.buffer)
         if match:
-            self.addTokenToList(match, "code")
+            self.addTokenToList(match, "`")
             self.eliminateTokenFromBuffer(match)
             return True
         else:
@@ -230,7 +232,7 @@ class Tokenizer:
     def handleStar(self):
         match = re.match("[*]", self.buffer)
         if match:
-            self.addTokenToList(match, "star")
+            self.addTokenToList(match, "*")
             self.eliminateTokenFromBuffer(match)
             return True
         else:
@@ -239,7 +241,7 @@ class Tokenizer:
     def handleUnderscore(self):
         match = re.match("[_]", self.buffer)
         if match:
-            self.addTokenToList(match, "underscore")
+            self.addTokenToList(match, "_")
             self.eliminateTokenFromBuffer(match)
             return True
         else:
@@ -248,7 +250,7 @@ class Tokenizer:
     def handleLine(self):
         match = re.match("[-]", self.buffer)
         if match:
-            self.addTokenToList(match, "line")
+            self.addTokenToList(match, "-")
             self.eliminateTokenFromBuffer(match)
             return True
         else:
@@ -257,14 +259,32 @@ class Tokenizer:
     def handleTilde(self):
         match = re.match("[~]", self.buffer)
         if match:
-            self.addTokenToList(match, "tilde")
+            self.addTokenToList(match, "~")
+            self.eliminateTokenFromBuffer(match)
+            return True
+        else:
+            return False
+
+    def handleVerticalLine(self):
+        match = re.match("[|]", self.buffer)
+        if match:
+            self.addTokenToList(match, "|")
+            self.eliminateTokenFromBuffer(match)
+            return True
+        else:
+            return False
+
+    def handleExclamationMark(self):
+        match = re.match("[!]", self.buffer)
+        if match:
+            self.addTokenToList(match, "!")
             self.eliminateTokenFromBuffer(match)
             return True
         else:
             return False
 
     def handleOtherSymbols(self):
-        match = re.match("[@!#$%^&=;:?/.,]+", self.buffer)
+        match = re.match("[@#$%^&=;:?/.,]+", self.buffer)
         if match:
             self.addTokenToList(match, "symbols")
             self.eliminateTokenFromBuffer(match)
