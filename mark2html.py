@@ -36,15 +36,19 @@ def main():
         tokenizer = Tokenizer(inputBuffer)
         tokenizer.tokenize()
         tokens = tokenizer.getTokens()
+        for item in tokens:
+            print(item)
+        print("\n\n\n")
 
         parser = Parser(tokens)
         parser.parse()
         outputBuffer = parser.getOutput()
+        print(outputBuffer)
 
-        if(len(sys.argv) == 3):
-            writeFile(sys.argv[2], outputBuffer)
-        else:
-            writeFile("output.html", outputBuffer)
+        # if(len(sys.argv) == 3):
+        #     writeFile(sys.argv[2], outputBuffer)
+        # else:
+        #     writeFile("output.html", outputBuffer)
 
 
 if __name__ == '__main__':
