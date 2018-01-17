@@ -9,6 +9,8 @@ class Tokenizer:
     def tokenize(self):
         oldbuffer = self.buffer
         while self.buffer != "":
+            if(self.handleReference()): continue
+            if(self.handleTop()): continue
             if(self.handleNewline()): continue
             if(self.handleTab()): continue
             if(self.handleSpace()): continue
@@ -29,6 +31,7 @@ class Tokenizer:
             if(self.handleAngularBrackets()): continue
             if(self.handleBraces()): continue
             if(self.handleOtherSymbols()): continue
+            if(self.handleNumbers()): continue
             if(self.handleWords()): continue
             if(oldbuffer == self.buffer):
                 print("\n\nGot stuck at \"" + self.buffer.split(' ', 1)[0] + "\"")
@@ -292,8 +295,35 @@ class Tokenizer:
         else:
             return False
 
+    def handleNumbers(self):
+        match = re.match("[0-9]+", self.buffer)
+        if match:
+            self.addTokenToList(match, "number")
+            self.eliminateTokenFromBuffer(match)
+            return True
+        else:
+            return False
+
+    def handleReference(self):
+        match = re.match("!\[Cuprins\]!", self.buffer)
+        if match:
+            self.addTokenToList(match, "reference")
+            self.eliminateTokenFromBuffer(match)
+            return True
+        else:
+            return False
+
+    def handleTop(self):
+        match = re.match("!\[top\]!", self.buffer)
+        if match:
+            self.addTokenToList(match, "top")
+            self.eliminateTokenFromBuffer(match)
+            return True
+        else:
+            return False
+
     def handleWords(self):
-        match = re.match("[a-zA-Z0-9]+", self.buffer)
+        match = re.match("[a-zA-Z]+", self.buffer)
         if match:
             self.addTokenToList(match, "word")
             self.eliminateTokenFromBuffer(match)
